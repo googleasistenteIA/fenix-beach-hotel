@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fénix Beach Club & Hotel · Google Hotels</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1a73e8;--bl:#e8f0fe;
+  --green:#0f9e75;--gl:#e6f4ea;
+  --red:#c5221f;--rl:#fce8e6;
+  --amber:#f9ab00;--al:#fff9e6;
+  --g0:#fff;--g1:#f8f9fa;--g2:#f1f3f4;--g3:#e8eaed;--g4:#dadce0;
+  --g6:#9aa0a6;--g7:#5f6368;--g8:#3c4043;--g9:#202124;
+  --font:'Google Sans','Roboto',sans-serif;
+  --r:10px;--rl2:16px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--g1);color:var(--g9);font-size:14px}
+.shell{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;background:var(--g0);box-shadow:0 0 50px rgba(0,0,0,.1)}
+.hdr{display:flex;align-items:center;gap:12px;padding:14px 22px;background:var(--g0);border-bottom:1px solid var(--g4);flex-shrink:0}
+.hdr-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#e8590c,#a8350a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.hdr-name{font-size:15px;font-weight:500;color:var(--g9);line-height:1.2}
+.hdr-sub{font-size:11px;color:var(--g6)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:5px;font-size:11px;padding:4px 11px;border-radius:20px}
+.pill-live{color:var(--green);background:var(--gl)}
+.pill-pow{color:var(--g7);background:var(--g2)}
+.odot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tabs{display:flex;background:var(--g0);border-bottom:1px solid var(--g4);flex-shrink:0;overflow-x:auto}
+.tab{padding:13px 18px;font-size:13px;font-weight:500;color:var(--g7);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--blue);background:var(--bl)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.pages{flex:1;overflow-y:auto}
+.page{display:none;padding:22px}
+.page.active{display:block}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.mc{background:var(--g0);border:1px solid var(--g4);border-radius:var(--r);padding:14px 16px;cursor:pointer}
+.mc:hover,.mc.sel{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,115,232,.15)}
+.mc-lbl{font-size:11px;color:var(--g7);margin-bottom:6px}
+.mc-val{font-size:26px;font-weight:400;color:var(--g9);letter-spacing:-.5px}
+.mc-val.empty{color:var(--g5)}
+.mc-delta{font-size:11px;margin-top:3px}
+.up{color:var(--green)}.dn{color:var(--red)}.neu{color:var(--g6)}
+.cc{background:var(--g0);border:1px solid var(--g4);border-radius:var(--rl2);padding:18px;margin-bottom:20px}
+.cc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.cc-title{font-size:13px;font-weight:500;color:var(--g8)}
+.ctabs{display:flex;border:1px solid var(--g4);border-radius:var(--r);overflow:hidden}
+.ctab{padding:5px 12px;font-size:12px;cursor:pointer;color:var(--g7);border-right:1px solid var(--g4);background:var(--g0)}
+.ctab:last-child{border-right:none}
+.ctab.active{background:var(--bl);color:var(--blue);font-weight:500}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:620px){.sg{grid-template-columns:1fr}}
+.sc{background:var(--g0);border:1px solid var(--g4);border-radius:var(--rl2);overflow:hidden}
+.sc-head{padding:12px 16px;border-bottom:1px solid var(--g4);display:flex;align-items:center;justify-content:space-between}
+.sc-title{font-size:13px;font-weight:500;color:var(--g8)}
+.elink{font-size:12px;color:var(--blue);cursor:pointer}
+.sr{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 16px;border-bottom:1px solid var(--g3);gap:8px}
+.sr:last-child{border-bottom:none}
+.sk{font-size:13px;color:var(--g7);flex-shrink:0}
+.sv{font-size:13px;color:var(--g9);font-weight:500;text-align:right;line-height:1.5}
+.sv.bl{color:var(--blue)}.sv.gr{color:var(--green)}.sv.rd{color:var(--red)}.sv.am{color:#b06000}
+.tc{background:var(--g0);border:1px solid var(--g4);border-radius:var(--rl2);overflow:hidden;margin-bottom:20px}
+.tt{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--g4)}
+.ttitle{font-size:13px;font-weight:500;color:var(--g8)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 14px;font-size:10px;font-weight:500;color:var(--g7);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--g4);background:var(--g1);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--g4);color:var(--g8)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--g1)}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.da{background:#34A853}.dp{background:#FBBC05}
+.mp{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.mph{background:#e8f0fe;color:#1558d6}
+.mpe{background:#e6f4ea;color:#137333}
+.mpb{background:#f1f3f4;color:#5f6368}
+.neg-tag{background:#fce8e6;color:#c5221f;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin:2px 3px}
+.comp-tag{background:#fff9e6;color:#7c4d00;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin:2px 3px}
+.room-card{border:1px solid var(--g4);border-radius:var(--r);padding:13px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.room-name{font-size:13px;font-weight:600;color:var(--g9)}
+.room-cap{font-size:11px;color:var(--g6);margin-top:2px}
+.room-amenities{font-size:10px;color:var(--g7);margin-top:4px}
+.hp{background:var(--g0);border:1px solid var(--g4);border-radius:var(--rl2);overflow:hidden;margin-bottom:18px}
+.hp-strip{height:100px;background:linear-gradient(135deg,#e8590c,#a8350a);display:flex;align-items:center;gap:8px;padding:12px 16px}
+.hp-thumb{width:66px;height:76px;border-radius:6px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(255,255,255,.2)}
+.hp-meta{padding:14px 18px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.hp-info{flex:1;min-width:180px}
+.hp-name{font-size:17px;font-weight:500;margin-bottom:3px}
+.hp-addr{font-size:12px;color:var(--g6);margin-bottom:5px}
+.hp-stars{color:#FBBC05;font-size:13px}
+.hp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.hp-tag{font-size:11px;padding:3px 9px;border-radius:20px}
+.hp-ctas{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.hp-book{padding:7px 16px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer}
+.hp-map{padding:7px 13px;border:1px solid var(--blue);color:var(--blue);border-radius:20px;font-size:12px;cursor:pointer;background:transparent}
+.hp-wa{padding:7px 13px;border:1px solid #25D366;color:#25D366;border-radius:20px;font-size:12px;cursor:pointer;background:transparent}
+.hp-price{text-align:right}
+.hp-from{font-size:11px;color:var(--g6)}
+.hp-num{font-size:20px;font-weight:500;color:var(--g9)}
+.hp-sub{font-size:11px;color:var(--g6)}
+.ir{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+.ins{background:var(--g0);border:1px solid var(--g4);border-radius:var(--rl2);padding:13px 15px}
+.ins.warn{border-left:3px solid var(--amber)}
+.ins.good{border-left:3px solid #34A853}
+.ins.tip{border-left:3px solid var(--blue)}
+.ins.alert{border-left:3px solid var(--red)}
+.ins-ico{font-size:18px;margin-bottom:6px}
+.ins-t{font-size:12px;font-weight:500;color:var(--g8);margin-bottom:3px}
+.ins-d{font-size:11px;color:var(--g7);line-height:1.5}
+.dbar{background:var(--al);border:1px solid var(--amber);border-radius:var(--r);padding:10px 16px;display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:13px;color:#5f4d00;flex-wrap:wrap}
+.dbar-btn{padding:6px 14px;background:var(--amber);color:#5f4d00;border:none;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:var(--rl2);padding:22px;width:460px;max-width:92vw;max-height:85vh;overflow-y:auto}
+.modal-t{font-size:17px;font-weight:500;margin-bottom:4px}
+.modal-s{font-size:13px;color:var(--g7);margin-bottom:16px;line-height:1.5}
+.mf{margin-bottom:12px}
+.ml{font-size:12px;color:var(--g7);margin-bottom:4px;font-weight:500}
+.mi{width:100%;padding:8px 12px;border:1px solid var(--g4);border-radius:var(--r);font-size:13px;font-family:var(--font);outline:none}
+.mi:focus{border-color:var(--blue)}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.mcan{padding:7px 16px;border:1px solid var(--g4);border-radius:var(--r);font-size:13px;cursor:pointer;background:transparent;color:var(--g7)}
+.msnd{padding:7px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px}
+.msnd:hover{background:#1557b0}
+.mrow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:400px){.mrow2{grid-template-columns:1fr}}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--g9);color:#fff;padding:9px 18px;border-radius:22px;font-size:13px;font-weight:500;z-index:400;display:none;align-items:center;gap:7px;white-space:nowrap}
+.toast.show{display:flex}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<div class="hdr">
+  <div class="hdr-logo">🌴</div>
+  <div>
+    <div class="hdr-name">Fénix Beach Club & Hotel · Google Hotels</div>
+    <div class="hdr-sub">Panel de campaña · Tierra Bomba, Cartagena</div>
+  </div>
+  <div class="hdr-right">
+    <div class="pill pill-live"><span class="odot"></span>Activo</div>
+    <div class="pill pill-pow">IA · Asistente</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(this,'resumen')">Resumen</div>
+  <div class="tab" onclick="switchTab(this,'campana')">Campaña</div>
+  <div class="tab" onclick="switchTab(this,'habitaciones')">Habitaciones</div>
+  <div class="tab" onclick="switchTab(this,'palabras')">Palabras clave</div>
+  <div class="tab" onclick="switchTab(this,'hotel')">Ficha Hotels</div>
+  <div class="tab" onclick="switchTab(this,'reputacion')">Reputación</div>
+</div>
+
+<div class="pages">
+
+<!-- ===== RESUMEN ===== -->
+<div class="page active" id="page-resumen">
+  <div class="dbar" id="dbar">
+    🌴 <strong>Bienvenido.</strong> Campaña de Google Hotels + Search + Performance Max para Fénix Beach Club & Hotel configurada y lista.
+    <button class="dbar-btn" onclick="openDataModal()">Actualizar métricas</button>
+  </div>
+  <div class="mgrid" id="hl-metrics">
+    <div class="mc sel"><div class="mc-lbl">👁 Impresiones</div><div class="mc-val empty" id="v-imp">—</div><div class="mc-delta neu" id="d-imp">Sin datos aún</div></div>
+    <div class="mc"><div class="mc-lbl">🖱 Clics</div><div class="mc-val empty" id="v-clics">—</div><div class="mc-delta neu" id="d-clics">Sin datos aún</div></div>
+    <div class="mc"><div class="mc-lbl">📊 CTR</div><div class="mc-val empty" id="v-ctr">—</div><div class="mc-delta neu" id="d-ctr">Objetivo &gt;3.5%</div></div>
+    <div class="mc"><div class="mc-lbl">💰 Inversión</div><div class="mc-val empty" id="v-costo">$0</div><div class="mc-delta neu" id="d-costo">de $4.300.000 COP</div></div>
+    <div class="mc"><div class="mc-lbl">🛏️ Reservas hotel</div><div class="mc-val empty" id="v-conv">—</div><div class="mc-delta neu" id="d-conv">Objetivo: 38/mes</div></div>
+    <div class="mc"><div class="mc-lbl">📈 ROAS</div><div class="mc-val empty" id="v-roas">—</div><div class="mc-delta neu" id="d-roas">Objetivo: 4.7x</div></div>
+  </div>
+  <div class="cc">
+    <div class="cc-head">
+      <div class="cc-title">Rendimiento en el tiempo</div>
+      <div class="ctabs">
+        <div class="ctab active" onclick="switchChart(this,'clics')">Clics</div>
+        <div class="ctab" onclick="switchChart(this,'imp')">Impr.</div>
+        <div class="ctab" onclick="switchChart(this,'conv')">Reservas</div>
+        <div class="ctab" onclick="switchChart(this,'costo')">Inversión</div>
+      </div>
+    </div>
+    <div style="position:relative;height:190px"><canvas id="mc" role="img" aria-label="Rendimiento campaña">Proyección de rendimiento.</canvas></div>
+  </div>
+  <div class="ir" id="ins-row">
+    <div class="ins tip"><div class="ins-ico">🛏️</div><div class="ins-t">3 campañas trabajando juntas</div><div class="ins-d">Hotels (conversión final), Search (intención temprana) y Performance Max (visibilidad + captura de competencia con IA).</div></div>
+    <div class="ins good"><div class="ins-ico">⭐</div><div class="ins-t">Buena reputación: 4.4 en Maps</div><div class="ins-d">Calificación sólida en Google Maps. La estrategia incluye seguir generando reseñas recientes para mantenerla y mejorarla.</div></div>
+    <div class="ins good"><div class="ins-ico">🏨</div><div class="ins-t">10 tipos de habitación</div><div class="ins-d">Desde Doble Superior hasta Casa Playa (9 personas) — variedad amplia para distintos perfiles de huésped.</div></div>
+    <div class="ins alert"><div class="ins-ico">🤖</div><div class="ins-t">IA optimizando en tiempo real</div><div class="ins-d">Performance Max ajusta automáticamente títulos y descripciones según quién busca, e intercepta tráfico de competidores como Makani.</div></div>
+  </div>
+</div>
+
+<!-- ===== CAMPAÑA ===== -->
+<div class="page" id="page-campana">
+  <div class="sg">
+    <div class="sc" id="hl-hotels-camp">
+      <div class="sc-head"><div class="sc-title">Campaña 1 — Google Hotels (40%)</div><span class="sc-title" style="font-size:11px;color:var(--green)">● Activa</span></div>
+      <div class="sr"><span class="sk">Objetivo</span><span class="sv bl">Conversión final — comparación directa</span></div>
+      <div class="sr"><span class="sk">Presupuesto</span><span class="sv bl">$1.720.000 COP/mes</span></div>
+      <div class="sr"><span class="sk">Plataforma</span><span class="sv">Google Hotel Ads (Hotel Center)</span></div>
+      <div class="sr"><span class="sk">Modelo de puja</span><span class="sv">CPC / Comisión por reserva</span></div>
+      <div class="sr"><span class="sk">Motor de reservas</span><span class="sv">Omnibees (conectado)</span></div>
+    </div>
+    <div class="sc" id="hl-search-camp">
+      <div class="sc-head"><div class="sc-title">Campaña 2 — Google Search (30%)</div><span class="sc-title" style="font-size:11px;color:var(--green)">● Activa</span></div>
+      <div class="sr"><span class="sk">Objetivo</span><span class="sv bl">Captar intención antes de comparar precio</span></div>
+      <div class="sr"><span class="sk">Presupuesto</span><span class="sv bl">$1.290.000 COP/mes</span></div>
+      <div class="sr"><span class="sk">Estrategia de puja</span><span class="sv">Maximizar conversiones</span></div>
+      <div class="sr"><span class="sk">Control de copy</span><span class="sv gr">Total — destacamos fortalezas ✓</span></div>
+      <div class="sr"><span class="sk">Idiomas</span><span class="sv">Español, Inglés</span></div>
+    </div>
+    <div class="sc" id="hl-pmax-camp">
+      <div class="sc-head"><div class="sc-title">Campaña 3 — Performance Max (30%)</div><span class="sc-title" style="font-size:11px;color:var(--green)">● Activa</span></div>
+      <div class="sr"><span class="sk">Objetivo</span><span class="sv bl">Visibilidad + captura de competencia</span></div>
+      <div class="sr"><span class="sk">Presupuesto</span><span class="sv bl">$1.290.000 COP/mes</span></div>
+      <div class="sr"><span class="sk">Canales</span><span class="sv">Search, Display, Maps</span></div>
+      <div class="sr"><span class="sk">IA de Google</span><span class="sv gr">Ajusta títulos/subtítulos en tiempo real ✓</span></div>
+      <div class="sr"><span class="sk">Remarketing</span><span class="sv gr">Activo ✓</span></div>
+    </div>
+    <div class="sc" id="hl-geo">
+      <div class="sc-head"><div class="sc-title">Segmentación geográfica</div><span class="elink">✏ Editar</span></div>
+      <div class="sr"><span class="sk">Bogotá</span><span class="sv gr">● Activa · Prioridad alta</span></div>
+      <div class="sr"><span class="sk">Medellín</span><span class="sv gr">● Activa · Prioridad alta</span></div>
+      <div class="sr"><span class="sk">Turista en Cartagena</span><span class="sv gr">● Activa · Last-minute</span></div>
+      <div class="sr"><span class="sk">EEUU</span><span class="sv gr">● Activa · Internacional</span></div>
+      <div class="sr"><span class="sk">España</span><span class="sv gr">● Activa · Internacional</span></div>
+      <div class="sr"><span class="sk">Canadá</span><span class="sv gr">● Activa · Internacional</span></div>
+    </div>
+    <div class="sc" id="hl-kpis">
+      <div class="sc-head"><div class="sc-title">KPIs a monitorear</div></div>
+      <div class="sr"><span class="sk">Inventario total</span><span class="sv">33 habitaciones</span></div>
+      <div class="sr"><span class="sk">Reservas de hotel/mes</span><span class="sv bl">Objetivo: 38</span></div>
+      <div class="sr"><span class="sk">Clics a Google Hotels</span><span class="sv bl">Objetivo: 1.100/mes</span></div>
+      <div class="sr"><span class="sk">Costo por reserva</span><span class="sv bl">Objetivo: $113.000 COP</span></div>
+      <div class="sr"><span class="sk">ROAS objetivo</span><span class="sv bl">4.7x</span></div>
+      <div class="sr"><span class="sk">Ingreso estimado</span><span class="sv gr">$20.349.000 COP/mes</span></div>
+      <div class="sr"><span class="sk">Inversión total</span><span class="sv">$4.300.000 COP/mes</span></div>
+    </div>
+    <div class="sc" id="hl-reputacion-camp">
+      <div class="sc-head"><div class="sc-title">Estrategia de reputación</div></div>
+      <div class="sr"><span class="sk">Calificación actual</span><span class="sv gr">4.4 ⭐ — sólida</span></div>
+      <div class="sr"><span class="sk">Acción 1</span><span class="sv">Solicitar reseñas post-checkout</span></div>
+      <div class="sr"><span class="sk">Acción 2</span><span class="sv">Responder TODAS las reseñas</span></div>
+      <div class="sr"><span class="sk">Acción 3</span><span class="sv">Resolver puntos de mantenim./minibar</span></div>
+      <div class="sr"><span class="sk">Meta</span><span class="sv gr">4.6+ ⭐ en 90 días</span></div>
+    </div>
+  </div>
+  <div class="sc" id="hl-plan" style="margin-bottom:14px">
+    <div class="sc-head"><div class="sc-title">Plan de implementación</div></div>
+    <div class="sr"><span class="sk">Paso 1</span><span class="sv bl">Verificación de ficha en Google Hotel Center</span></div>
+    <div class="sr"><span class="sk">Paso 2</span><span class="sv">Conexión del motor de reservas (Omnibees) a Google</span></div>
+    <div class="sr"><span class="sk">Paso 3</span><span class="sv">Carga de tarifas y disponibilidad por tipo de habitación</span></div>
+    <div class="sr"><span class="sk">Paso 4</span><span class="sv">Configuración de seguimiento de conversiones</span></div>
+    <div class="sr"><span class="sk">Paso 5</span><span class="sv">Lanzamiento de campaña Google Hotel Ads</span></div>
+    <div class="sr"><span class="sk">Paso 6</span><span class="sv">Optimización semanal + gestión de reseñas</span></div>
+    <div class="sr"><span class="sk">Responsable</span><span class="sv gr">Equipo de Fénix Beach ✓</span></div>
+  </div>
+</div>
+
+<!-- ===== HABITACIONES ===== -->
+<div class="page" id="page-habitaciones">
+  <div style="font-size:12px;color:var(--g6);margin-bottom:12px">Inventario total: <strong style="color:var(--g9)">33 habitaciones</strong> distribuidas en 9 categorías</div>
+  <div class="tc" id="hl-rooms">
+    <div class="tt"><div class="ttitle">Tipos de habitación — 9 categorías · 33 habitaciones en total</div></div>
+    <div style="padding:14px 18px">
+      <div class="room-card"><div><div class="room-name">Master Suite</div><div class="room-cap">👥 2 personas · Vista al océano</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv bl">Premium</div></div>
+      <div class="room-card"><div><div class="room-name">Doble Superior</div><div class="room-cap">👥 2 personas · Vista terraza/balcón</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv">Entrada</div></div>
+      <div class="room-card"><div><div class="room-name">Bungalow Estándar</div><div class="room-cap">👥 3 personas · Vista jardín/piscina</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv">Entrada</div></div>
+      <div class="room-card"><div><div class="room-name">Villa con Piscina</div><div class="room-cap">👥 4 personas · Piscina privada</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv bl">Premium</div></div>
+      <div class="room-card"><div><div class="room-name">Bungalow Deluxe</div><div class="room-cap">👥 4 personas · Terraza privada</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv bl">Premium</div></div>
+      <div class="room-card"><div><div class="room-name">Bungalow Superior</div><div class="room-cap">👥 4 personas · Vista jardín</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv">Entrada</div></div>
+      <div class="room-card"><div><div class="room-name">Bungalow Familiar</div><div class="room-cap">👥 6 personas · Zona de estar</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv gr">Familiar</div></div>
+      <div class="room-card"><div><div class="room-name">Villa Familiar</div><div class="room-cap">👥 8 personas · Piscina privada</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv gr">Familiar</div></div>
+      <div class="room-card"><div><div class="room-name">Casa Playa</div><div class="room-cap">👥 9 personas · Terraza frente al mar</div><div class="room-amenities">Desayuno · Minibar · A/C · TV · WiFi</div></div><div class="sv gr">Familiar grande</div></div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-title">Amenidades generales del hotel</div></div>
+    <div class="sr"><span class="sk">Playa</span><span class="sv gr">Privada ✓</span></div>
+    <div class="sr"><span class="sk">Piscina</span><span class="sv gr">Exterior ✓</span></div>
+    <div class="sr"><span class="sk">Restaurante</span><span class="sv gr">Bar-restaurante frente al mar ✓</span></div>
+    <div class="sr"><span class="sk">Actividades</span><span class="sv">Kayak, paddle, voleibol, baile, fogatas</span></div>
+    <div class="sr"><span class="sk">Desayuno</span><span class="sv gr">Incluido en todas las habitaciones ✓</span></div>
+    <div class="sr"><span class="sk">WiFi</span><span class="sv gr">Gratuito en todas las áreas ✓</span></div>
+    <div class="sr"><span class="sk">Transporte</span><span class="sv">Lancha desde Cartagena (10-15 min)</span></div>
+  </div>
+</div>
+
+<!-- ===== PALABRAS CLAVE ===== -->
+<div class="page" id="page-palabras">
+  <div class="tc" id="hl-kw1" style="margin-bottom:14px">
+    <div class="tt"><div class="ttitle">Palabras clave — Alta intención de reserva</div></div>
+    <table>
+      <thead><tr><th></th><th>Palabra clave</th><th>Tipo</th><th>CPC est.</th></tr></thead>
+      <tbody>
+        <tr><td><span class="sdot da"></span></td><td>"hotel tierra bomba"</td><td><span class="mp mph">Frase</span></td><td>$2.600</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"hotel playa cartagena"</td><td><span class="mp mph">Frase</span></td><td>$2.900</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"hotel frente al mar cartagena"</td><td><span class="mp mph">Frase</span></td><td>$2.700</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"hospedaje isla cartagena"</td><td><span class="mp mph">Frase</span></td><td>$2.200</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"villa con piscina cartagena"</td><td><span class="mp mph">Frase</span></td><td>$2.400</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"bungalow playa cartagena"</td><td><span class="mp mph">Frase</span></td><td>$2.000</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>[fenix beach hotel]</td><td><span class="mp mpe">Exacta</span></td><td>$3.400</td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"hotel boutique tierra bomba"</td><td><span class="mp mph">Frase</span></td><td>$2.300</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tc" id="hl-competencia" style="margin-bottom:14px">
+    <div class="tt"><div class="ttitle">Palabras clave — Captura de tráfico de competencia</div></div>
+    <table>
+      <thead><tr><th></th><th>Palabra clave</th><th>Tipo</th><th>Estrategia</th></tr></thead>
+      <tbody>
+        <tr><td><span class="sdot dp"></span></td><td>"makani luxury beach club"</td><td><span class="mp mpb">Amplia mod.</span></td><td><span class="comp-tag">Interceptar competencia</span></td></tr>
+        <tr><td><span class="sdot dp"></span></td><td>"hoteles tierra bomba"</td><td><span class="mp mph">Frase</span></td><td><span class="comp-tag">Categoría general</span></td></tr>
+        <tr><td><span class="sdot dp"></span></td><td>"mejores hoteles isla cartagena"</td><td><span class="mp mph">Frase</span></td><td><span class="comp-tag">Interceptar competencia</span></td></tr>
+        <tr><td><span class="sdot da"></span></td><td>"la punta beach club"</td><td><span class="mp mpe">Exacta</span></td><td><span class="comp-tag">Mismo target (alianza)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tc">
+    <div class="tt"><div class="ttitle">Palabras clave negativas</div></div>
+    <div style="padding:12px 16px">
+      <span class="neg-tag">gratis</span><span class="neg-tag">barato</span><span class="neg-tag">económico</span><span class="neg-tag">hostal</span><span class="neg-tag">camping</span><span class="neg-tag">trabajo</span><span class="neg-tag">empleo</span><span class="neg-tag">como llegar</span><span class="neg-tag">pasadía</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FICHA HOTELS ===== -->
+<div class="page" id="page-hotel">
+  <div style="font-size:12px;color:var(--g6);margin-bottom:12px">Vista previa — así aparece Fénix Beach en Google Hotels y búsquedas de Google</div>
+  <div class="hp" id="hl-hotel">
+    <div class="hp-strip">
+      <div class="hp-thumb">🏨</div><div class="hp-thumb">🌊</div><div class="hp-thumb">🏊</div><div class="hp-thumb">🛏️</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-left:6px">+15 fotos</div>
+    </div>
+    <div class="hp-meta">
+      <div class="hp-info">
+        <div class="hp-name">Fénix Beach Club & Hotel</div>
+        <div class="hp-addr">📍 Punta Arena, Tierra Bomba, Cartagena · 10-15 min en lancha</div>
+        <div class="hp-stars">★★★★★</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--g8)">4.4</span>
+          <div style="flex:1;max-width:100px;height:5px;background:var(--g3);border-radius:3px;overflow:hidden"><div style="width:88%;height:100%;background:#FBBC05;border-radius:3px"></div></div>
+          <span style="font-size:11px;color:var(--g6)">Buena reputación en Google Maps</span>
+        </div>
+        <div class="hp-tags">
+          <span class="hp-tag" style="background:var(--gl);color:var(--green)">✓ Desayuno incluido</span>
+          <span class="hp-tag" style="background:var(--bl);color:var(--blue)">🏖️ Playa privada</span>
+          <span class="hp-tag" style="background:var(--al);color:#7c4d00">🏊 Piscina</span>
+          <span class="hp-tag" style="background:var(--g2);color:var(--g7)">📶 WiFi gratis</span>
+        </div>
+        <div class="hp-ctas">
+          <button class="hp-book">Reservar habitación</button>
+          <button class="hp-map">Ver en Maps</button>
+          <button class="hp-wa">💬 WhatsApp</button>
+        </div>
+      </div>
+      <div class="hp-price">
+        <div class="hp-from">Desde</div>
+        <div class="hp-num">$280.000</div>
+        <div class="hp-sub">COP · por noche</div>
+        <div style="margin-top:7px;font-size:11px;color:var(--green)">● Disponible</div>
+        <div style="font-size:11px;color:var(--g6);margin-top:2px">Check-in flexible</div>
+      </div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-title">Estado en Google Hotels</div></div>
+    <div class="sr"><span class="sk">Estado</span><span class="sv am">● Pendiente de conexión completa</span></div>
+    <div class="sr"><span class="sk">Calificación en Maps</span><span class="sv gr">4.4 ⭐ ✓</span></div>
+    <div class="sr"><span class="sk">Motor de reservas</span><span class="sv">Omnibees (book.omnibees.com)</span></div>
+    <div class="sr"><span class="sk">Fotos</span><span class="sv am">Por cargar — recomendado 15+</span></div>
+    <div class="sr"><span class="sk">Tarifas en tiempo real</span><span class="sv am">Pendiente de sincronización</span></div>
+    <div class="sr"><span class="sk">Botón reserva directa</span><span class="sv gr">Disponible vía Omnibees ✓</span></div>
+    <div class="sr"><span class="sk">Ubicación verificada</span><span class="sv gr">Sí ✓</span></div>
+  </div>
+</div>
+
+<!-- ===== REPUTACIÓN ===== -->
+<div class="page" id="page-reputacion">
+  <div class="dbar" style="background:var(--gl);border-color:#34A853;color:#0a5c36">
+    ⭐ <strong>Fortaleza a aprovechar:</strong> 4.4 de calificación en Google Maps. Esta sección detalla cómo mantenerla y seguir creciendo.
+  </div>
+  <div class="sg" id="hl-reputacion">
+    <div class="sc">
+      <div class="sc-head"><div class="sc-title">Lo que dicen bien</div></div>
+      <div class="sr"><span class="sk">Ubicación</span><span class="sv gr">Muy valorada ✓</span></div>
+      <div class="sr"><span class="sk">Comida</span><span class="sv gr">Elogiada frecuentemente ✓</span></div>
+      <div class="sr"><span class="sk">Personal</span><span class="sv gr">Atento y cálido ✓</span></div>
+      <div class="sr"><span class="sk">Playa privada</span><span class="sv gr">Punto fuerte ✓</span></div>
+      <div class="sr"><span class="sk">Piscina y zonas comunes</span><span class="sv gr">Bien valoradas ✓</span></div>
+      <div class="sr"><span class="sk">Calificación Maps</span><span class="sv gr">4.4 ⭐ — sólida ✓</span></div>
+    </div>
+    <div class="sc">
+      <div class="sc-head"><div class="sc-title">Puntos a vigilar</div></div>
+      <div class="sr"><span class="sk">Mantenimiento</span><span class="sv am">Algunas quejas puntuales</span></div>
+      <div class="sr"><span class="sk">Cargos de minibar</span><span class="sv am">Casos reportados a revisar</span></div>
+      <div class="sr"><span class="sk">Agua caliente</span><span class="sv am">Limitada en algunas habitaciones</span></div>
+      <div class="sr"><span class="sk">Asignación de hab.</span><span class="sv am">Inconsistencias puntuales</span></div>
+    </div>
+  </div>
+  <div class="sc" style="margin-bottom:14px">
+    <div class="sc-head"><div class="sc-title">Plan para mantener y mejorar la reputación</div></div>
+    <div class="sr"><span class="sk">Acción 1</span><span class="sv">Solicitar reseña automática post-checkout vía WhatsApp</span></div>
+    <div class="sr"><span class="sk">Acción 2</span><span class="sv">Responder el 100% de reseñas en menos de 48h</span></div>
+    <div class="sr"><span class="sk">Acción 3</span><span class="sv">Resolver los puntos de mantenimiento y política de minibar</span></div>
+    <div class="sr"><span class="sk">Acción 4</span><span class="sv">Estandarizar el proceso de asignación de habitaciones</span></div>
+    <div class="sr"><span class="sk">Meta</span><span class="sv gr">Mantener 4.4+ y subir a 4.6 en 90 días</span></div>
+  </div>
+  <div class="ir">
+    <div class="ins good"><div class="ins-ico">✅</div><div class="ins-t">Ventaja competitiva</div><div class="ins-d">Un rating de 4.4 ya es competitivo frente a otros hoteles de la zona — Google Hotels lo muestra junto al precio, y esto ayuda a convertir.</div></div>
+    <div class="ins tip"><div class="ins-ico">💡</div><div class="ins-t">Oportunidad de crecer aún más</div><div class="ins-d">Resolver los puntos puntuales de mantenimiento puede llevar la calificación de 4.4 a 4.6+ y mejorar aún más la conversión.</div></div>
+  </div>
+</div></div>
+</div>
+
+<div class="ov" id="data-ov">
+  <div class="modal">
+    <div class="modal-t">Actualizar métricas reales</div>
+    <div class="modal-s">Copia estos datos desde Google Hotel Center para ver el panel con cifras reales.</div>
+    <div class="mrow2">
+      <div class="mf"><div class="ml">Impresiones</div><input class="mi" id="m-imp" type="number" placeholder="Ej: 18000"></div>
+      <div class="mf"><div class="ml">Clics</div><input class="mi" id="m-clics" type="number" placeholder="Ej: 650"></div>
+    </div>
+    <div class="mrow2">
+      <div class="mf"><div class="ml">Inversión (COP)</div><input class="mi" id="m-costo" type="number" placeholder="Ej: 4000000"></div>
+      <div class="mf"><div class="ml">Reservas confirmadas</div><input class="mi" id="m-conv" type="number" placeholder="Ej: 35"></div>
+    </div>
+    <div class="mf"><div class="ml">Ingresos por reservas (COP)</div><input class="mi" id="m-ing" type="number" placeholder="Ej: 18500000"></div>
+    <div class="mbtns">
+      <button class="mcan" onclick="closeDataModal()">Cancelar</button>
+      <button class="msnd" onclick="saveData()">Guardar y actualizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let chartInst=null, curM='clics', datos={};
+
+function switchTab(el,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-'+id).classList.add('active');
+}
+
+function buildChart(){
+  const ctx=document.getElementById('mc');
+  const d={
+    clics:[140,310,490,datos.clics||650],
+    imp:[3500,8200,13500,datos.imp||18000],
+    conv:[6,16,26,datos.conv||35],
+    costo:[750000,1800000,2950000,datos.costo||4000000]
+  };
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels:['Sem 1','Sem 2','Sem 3','Sem 4'],datasets:[{data:d[curM],borderColor:'#e8590c',backgroundColor:'rgba(232,89,12,.07)',fill:true,tension:0.4,pointBackgroundColor:'#e8590c',pointRadius:4,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},callback:v=>curM==='costo'?'$'+Math.round(v/1000)+'K':Math.round(v).toLocaleString()}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+}
+function switchChart(el,m){
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); curM=m; buildChart();
+}
+buildChart();
+
+function openDataModal(){document.getElementById('data-ov').classList.add('open');}
+function closeDataModal(){document.getElementById('data-ov').classList.remove('open');}
+function fN(n){return Math.round(n).toLocaleString('es-CO');}
+function fCOP(n){return n>=1000000?'$'+(n/1000000).toFixed(1)+'M':'$'+Math.round(n/1000)+'K';}
+
+function saveData(){
+  const imp=parseInt(document.getElementById('m-imp').value)||0;
+  const clics=parseInt(document.getElementById('m-clics').value)||0;
+  const costo=parseInt(document.getElementById('m-costo').value)||0;
+  const conv=parseInt(document.getElementById('m-conv').value)||0;
+  const ing=parseInt(document.getElementById('m-ing').value)||0;
+  if(!imp&&!clics){alert('Ingresa al menos impresiones y clics.');return;}
+  datos={imp,clics,costo,conv,ing};
+  const ctr=clics&&imp?(clics/imp*100).toFixed(2)+'%':'—';
+  const roas=ing&&costo?(ing/costo).toFixed(1)+'x':'—';
+  const ctrN=clics&&imp?clics/imp*100:0;
+  document.getElementById('v-imp').textContent=fN(imp); document.getElementById('v-imp').className='mc-val';
+  document.getElementById('v-clics').textContent=fN(clics); document.getElementById('v-clics').className='mc-val';
+  document.getElementById('v-ctr').textContent=ctr; document.getElementById('v-ctr').className='mc-val';
+  document.getElementById('v-costo').textContent=fCOP(costo)+' COP'; document.getElementById('v-costo').className='mc-val';
+  document.getElementById('v-conv').textContent=conv?fN(conv):'—'; document.getElementById('v-conv').className='mc-val';
+  document.getElementById('v-roas').textContent=roas; document.getElementById('v-roas').className='mc-val';
+  document.getElementById('d-imp').textContent='↑ campaña activa'; document.getElementById('d-imp').className='mc-delta up';
+  document.getElementById('d-clics').textContent=clics>0?'↑ en crecimiento':'esperando'; document.getElementById('d-clics').className='mc-delta up';
+  document.getElementById('d-ctr').textContent=ctrN>=3.5?'↑ sobre objetivo 3.5%':'↓ revisar ficha'; document.getElementById('d-ctr').className='mc-delta '+(ctrN>=3.5?'up':'dn');
+  document.getElementById('d-costo').textContent=`${fCOP(costo)} de $4.3M presup.`; document.getElementById('d-costo').className='mc-delta neu';
+  document.getElementById('d-conv').textContent=conv?`${conv} de 38 objetivo`:'sin reservas aún'; document.getElementById('d-conv').className='mc-delta '+(conv>=38?'up':'neu');
+  document.getElementById('d-roas').textContent=roas!='—'?(parseFloat(roas)>=4.5?'↑ objetivo alcanzado':'↑ buen retorno'):'sin datos'; document.getElementById('d-roas').className='mc-delta '+(roas!='—'?'up':'neu');
+  buildChart();
+  closeDataModal();
+  showToast('✅ Métricas actualizadas');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+<!-- WIDGET DE VOZ INTERACTIVO - Fénix Beach -->
+<style>
+.voice-highlight {
+  animation: voiceGlow 1.6s ease-in-out infinite;
+  border-radius: 16px !important;
+  position: relative;
+  z-index: 5;
+  scroll-margin-top: 90px;
+}
+@keyframes voiceGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,89,12,.55); border-color: #e8590c !important; }
+  50% { box-shadow: 0 0 0 8px rgba(232,89,12,.12), 0 0 24px rgba(232,89,12,.25); border-color: #e8590c !important; }
+}
+</style>
+
+<div id="voice-widget" style="position:fixed;bottom:20px;right:20px;z-index:1000;font-family:'Google Sans',Roboto,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-width:340px">
+
+  <div id="chapter-list" style="display:none;background:#fff;border:1px solid #dadce0;border-radius:14px;padding:14px 16px;font-size:12px;color:#3c4043;max-width:320px;max-height:280px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.15)">
+    <div style="font-weight:600;margin-bottom:10px;color:#202124;font-size:13px">📚 Explicación por capítulos</div>
+    <div id="chapter-items"></div>
+  </div>
+
+  <div id="voice-progress" style="display:none;background:#fff;border:1px solid #dadce0;border-radius:14px;padding:14px 16px;font-size:12px;color:#5f6368;max-width:320px;box-shadow:0 4px 20px rgba(0,0,0,.15)">
+    <div id="voice-chapter-title" style="font-weight:600;color:#e8590c;margin-bottom:6px;font-size:12px"></div>
+    <div id="voice-text" style="line-height:1.65"></div>
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button onclick="prevChapter()" style="flex:1;padding:6px;border:1px solid #dadce0;background:#fff;border-radius:8px;font-size:11px;cursor:pointer;color:#5f6368">⏮ Anterior</button>
+      <button onclick="nextChapter()" style="flex:1;padding:6px;border:1px solid #dadce0;background:#fff;border-radius:8px;font-size:11px;cursor:pointer;color:#5f6368">Siguiente ⏭</button>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+    <button id="chapters-btn" onclick="toggleChapters()" style="display:flex;align-items:center;gap:8px;padding:13px 18px;background:#fff;color:#5f6368;border:1px solid #dadce0;border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+      <span>📚</span><span>Capítulos</span>
+    </button>
+
+    <button id="voice-btn" onclick="toggleVoice()" style="display:flex;align-items:center;gap:8px;padding:13px 20px;background:#e8590c;color:#fff;border:none;border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 4px 14px rgba(232,89,12,.4)">
+      <span id="voice-icon">🔊</span>
+      <span id="voice-label">Escuchar explicación completa</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const CHAPTERS = [
+  {
+    title: "1. Bienvenida y resumen general",
+    page: "resumen", highlight: "hl-metrics",
+    text: "Hola. Soy el asistente de voz de Fénix Beach Club y Hotel, y voy a explicarte con detalle cómo está configurada la campaña de publicidad en Google. A medida que vaya hablando, el panel te irá mostrando automáticamente la sección correspondiente, para que puedas ver mientras escuchas. Empecemos."
+  },
+  {
+    title: "2. ¿Dónde está ubicado Fénix Beach?",
+    page: "hotel", highlight: "hl-hotel",
+    text: "Fénix Beach Club y Hotel está ubicado en Punta Arena, en la isla de Tierra Bomba, a solo diez a quince minutos en lancha desde el centro histórico de Cartagena. Es un destino que combina hotel, beach club y experiencias frente al mar, todo en una isla privada apartada del ruido de la ciudad."
+  },
+  {
+    title: "3. El producto: hospedaje con nueve tipos de habitación",
+    page: "habitaciones", highlight: "hl-rooms",
+    text: "El foco de esta campaña es el hospedaje. Fénix cuenta con treinta y tres habitaciones en total, distribuidas en nueve tipos diferentes, pensados para distintos perfiles de huésped. Para parejas, está la Master Suite con vista al océano, y la Doble Superior. Para grupos medianos, el Bungalow Deluxe y el Bungalow Superior, con capacidad de hasta cuatro personas, además de la Villa con Piscina privada. Y para grupos grandes o familias, el Bungalow Familiar para seis personas, la Villa Familiar para ocho, y la Casa Playa, que tiene terraza frente al mar y capacidad para nueve personas. Todas las habitaciones incluyen desayuno, minibar, aire acondicionado, televisor y wifi gratuito."
+  },
+  {
+    title: "4. El presupuesto: cuatro millones trescientos mil pesos",
+    page: "campana", highlight: "hl-kpis",
+    text: "La inversión mensual en publicidad es de cuatro millones trescientos mil pesos colombianos. Este presupuesto se divide en tres campañas que trabajan juntas, cada una con un rol distinto dentro del proceso de decisión del huésped. Vamos a explicar cada una en detalle."
+  },
+  {
+    title: "5. Campaña uno: Google Hotels, el cuarenta por ciento",
+    page: "campana", highlight: "hl-hotels-camp",
+    text: "La primera campaña es Google Hotels, y recibe el cuarenta por ciento del presupuesto, es decir, un millón setecientos veinte mil pesos colombianos al mes. Esta es la etapa final de decisión: aparece cuando alguien ya decidió ver opciones de hotel en Tierra Bomba o cerca de Cartagena, y está comparando precio, disponibilidad y calificación directamente en la pantalla de Google. El motor de reservas Omnibees está conectado, lo que permite mostrar tarifas en tiempo real y recibir reservas directas."
+  },
+  {
+    title: "6. Campaña dos: Google Search, el treinta por ciento",
+    page: "campana", highlight: "hl-search-camp",
+    text: "La segunda campaña es Google Search, con el treinta por ciento del presupuesto, un millón doscientos noventa mil pesos colombianos al mes. Esta campaña captura a las personas en un momento anterior: cuando todavía están escribiendo en Google frases como, hotel frente al mar Cartagena, o, hospedaje isla Cartagena, antes incluso de llegar a la pantalla de comparación de Google Hotels. La ventaja de Search es que tenemos control total sobre el texto del anuncio, lo que nos permite destacar las fortalezas de Fénix, como la playa privada y el desayuno incluido, antes de que el usuario vea cualquier calificación."
+  },
+  {
+    title: "7. Campaña tres: Performance Max, el treinta por ciento",
+    page: "campana", highlight: "hl-pmax-camp",
+    text: "La tercera campaña es Performance Max, también con el treinta por ciento del presupuesto, un millón doscientos noventa mil pesos colombianos al mes. Esta es la campaña impulsada con Inteligencia Artificial. La IA de Google analiza en tiempo real quién está buscando, y ajusta automáticamente los títulos y subtítulos del anuncio para mostrar el mensaje más efectivo a cada persona. Aparece en Search, en Display y en Google Maps, y además hace remarketing a quienes visitaron la página sin reservar. Una función clave de esta campaña es la captura de tráfico de competencia: el anuncio puede aparecer cuando alguien busca específicamente otros hoteles de la zona, como Makani Luxury Beach Club, interceptando a ese cliente antes de que reserve en otro lugar."
+  },
+  {
+    title: "8. Estrategia de palabras clave",
+    page: "palabras", highlight: "hl-kw1",
+    text: "Las palabras clave principales de alta intención incluyen frases como, hotel Tierra Bomba, hotel playa Cartagena, hotel frente al mar Cartagena, hospedaje isla Cartagena, villa con piscina Cartagena, y el nombre exacto, Fénix Beach Hotel. También se usan palabras clave negativas, como gratis, barato, hostal o camping, para evitar gastar presupuesto en búsquedas que no son relevantes para un hotel de este nivel."
+  },
+  {
+    title: "9. Captura de competencia en Tierra Bomba",
+    page: "palabras", highlight: "hl-competencia",
+    text: "Una parte importante de la estrategia es interceptar el tráfico de otros hoteles de la misma isla. Cuando alguien busca Makani Luxury Beach Club, o términos generales como, mejores hoteles isla Cartagena, el anuncio de Fénix también puede aparecer, dándole al usuario una alternativa antes de que decida. Además, como La Punta Beach Club opera en el mismo destino de playa y comparte público objetivo, también se considera una oportunidad de visibilidad compartida más que una amenaza directa."
+  },
+  {
+    title: "10. El punto más importante: la reputación online",
+    page: "reputacion", highlight: "hl-reputacion",
+    text: "Antes de hablar de resultados, vale la pena hablar de la reputación, porque Google Hotels muestra la calificación justo al lado del precio, y eso influye directamente en la decisión del usuario. La buena noticia es que Fénix tiene una calificación de cuatro punto cuatro estrellas en Google Maps, lo cual es sólido y competitivo frente a otros hoteles de la zona. Lo que más se valora es la ubicación, la comida, la atención del personal, la playa privada y la piscina. Sí existen algunos comentarios puntuales sobre mantenimiento, cargos de minibar y agua caliente limitada en ciertas habitaciones, pero no son el patrón general, sino puntos específicos a vigilar y resolver."
+  },
+  {
+    title: "11. Plan para mejorar la reputación",
+    page: "reputacion", highlight: "hl-reputacion-camp",
+    text: "Por eso, junto con la campaña publicitaria, se recomienda un plan paralelo para mantener y seguir mejorando esa reputación. Primero, solicitar automáticamente una reseña por WhatsApp justo después del check-out, cuando la experiencia está fresca, para seguir sumando reseñas recientes y positivas. Segundo, responder el cien por ciento de las reseñas, tanto positivas como negativas, en menos de cuarenta y ocho horas. Tercero, revisar internamente los puntos puntuales de mantenimiento y la política de cobros de minibar, para resolverlos antes de que se conviertan en un patrón. Y cuarto, estandarizar el proceso de asignación de habitaciones. La meta es mantener el cuatro punto cuatro actual y subir a cuatro punto seis estrellas o más, en los próximos noventa días."
+  },
+  {
+    title: "12. Proyección de resultados esperados",
+    page: "resumen", highlight: "hl-metrics",
+    text: "Con base en el comportamiento de campañas similares en el sector hotelero de la zona, se proyecta lo siguiente cada mes: alrededor de mil cien clics hacia la ficha de Google Hotels, que se traducen en aproximadamente treinta y ocho reservas confirmadas. Para calcular el ingreso, ponderamos la tarifa según qué tan probable es que se reserve cada tipo de habitación: las habitaciones de entrada rotan más, las familiares menos pero con tarifa más alta. Con una tarifa promedio ponderada de trescientos cincuenta y siete mil pesos por noche, y una estadía promedio de una noche y media, típica de un destino isla tan cercano a Cartagena, el ingreso estimado es de veinte millones trescientos cuarenta y nueve mil pesos colombianos al mes. Comparando esos ingresos con los cuatro millones trescientos mil invertidos en publicidad, se obtiene un retorno sobre la inversión de cuatro punto siete veces. El costo promedio por cada reserva conseguida sería de aproximadamente ciento trece mil pesos colombianos."
+  },
+  {
+    title: "13. Cómo se implementará la campaña",
+    page: "campana", highlight: "hl-plan",
+    text: "El proceso de implementación tiene seis pasos. Primero, verificación completa de la ficha en Google Hotel Center. Segundo, conexión del motor de reservas Omnibees con Google, para que las tarifas se actualicen en tiempo real. Tercero, carga de tarifas y disponibilidad para cada tipo de habitación. Cuarto, configuración del seguimiento de conversiones, para medir cuántas reservas reales se generan. Quinto, lanzamiento oficial de las tres campañas. Y sexto, optimización semanal continua, que incluye tanto el ajuste de las campañas como el seguimiento del plan de mejora de reputación. Muchas gracias por tu atención. Si tienes alguna pregunta o sugerencia sobre esta estrategia, no dudes en escribirnos."
+  }
+];
+
+let currentChapter = 0;
+let isPlaying = false;
+let selectedVoice = null;
+let lastHighlight = null;
+
+function pickBestVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const priorities = [
+    v => v.name.includes('Google') && v.lang === 'es-US',
+    v => v.name.includes('Google') && v.lang === 'es-MX',
+    v => v.name.includes('Google') && v.lang === 'es-ES',
+    v => v.name.includes('Google') && v.lang.startsWith('es'),
+    v => /natural|neural|premium|wavenet/i.test(v.name) && v.lang.startsWith('es'),
+    v => v.lang === 'es-CO',
+    v => v.lang === 'es-MX',
+    v => v.lang === 'es-US',
+    v => v.lang.startsWith('es'),
+  ];
+  for (const test of priorities) {
+    const found = voices.find(test);
+    if (found) return found;
+  }
+  return voices[0];
+}
+
+function buildUtterance(text) {
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = (selectedVoice && selectedVoice.lang) || 'es-MX';
+  if (selectedVoice) utt.voice = selectedVoice;
+  utt.rate = 1.12;
+  utt.pitch = 1.0;
+  utt.volume = 1;
+  return utt;
+}
+
+function goToPanelSection(pageId, highlightId) {
+  const tabs = document.querySelectorAll('.tab');
+  const pages = document.querySelectorAll('.page');
+  tabs.forEach(t => t.classList.remove('active'));
+  pages.forEach(p => p.classList.remove('active'));
+  const targetPage = document.getElementById('page-' + pageId);
+  if (targetPage) targetPage.classList.add('active');
+  tabs.forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + pageId + "'")) {
+      t.classList.add('active');
+    }
+  });
+
+  if (lastHighlight) {
+    const prevEl = document.getElementById(lastHighlight);
+    if (prevEl) prevEl.classList.remove('voice-highlight');
+    lastHighlight = null;
+  }
+
+  if (highlightId) {
+    setTimeout(() => {
+      const el = document.getElementById(highlightId);
+      if (el) {
+        el.classList.add('voice-highlight');
+        el.scrollIntoView({behavior: 'smooth', block: 'center'});
+        lastHighlight = highlightId;
+      }
+    }, 150);
+  }
+}
+
+function speakChapter(index, autoAdvance) {
+  if (index < 0 || index >= CHAPTERS.length) { stopVoice(); return; }
+  currentChapter = index;
+  const ch = CHAPTERS[index];
+  document.getElementById('voice-chapter-title').textContent = ch.title;
+  document.getElementById('voice-text').textContent = ch.text;
+
+  goToPanelSection(ch.page, ch.highlight);
+
+  const sentences = ch.text.match(/[^.!?]+[.!?]+/g) || [ch.text];
+  let i = 0;
+
+  function speakSentence() {
+    if (i >= sentences.length) {
+      if (autoAdvance && isPlaying && currentChapter < CHAPTERS.length - 1) {
+        speakChapter(currentChapter + 1, true);
+      } else if (autoAdvance) {
+        stopVoice();
+      }
+      return;
+    }
+    const utt = buildUtterance(sentences[i].trim());
+    utt.onend = () => { i++; speakSentence(); };
+    speechSynthesis.speak(utt);
+  }
+  speechSynthesis.cancel();
+  speakSentence();
+}
+
+function toggleVoice() {
+  if (isPlaying) {
+    stopVoice();
+  } else {
+    isPlaying = true;
+    document.getElementById('voice-icon').textContent = '⏸️';
+    document.getElementById('voice-label').textContent = 'Pausar explicación';
+    document.getElementById('voice-progress').style.display = 'block';
+    document.getElementById('chapter-list').style.display = 'none';
+    speakChapter(0, true);
+  }
+}
+
+function stopVoice() {
+  isPlaying = false;
+  speechSynthesis.cancel();
+  document.getElementById('voice-icon').textContent = '🔊';
+  document.getElementById('voice-label').textContent = 'Escuchar explicación completa';
+  document.getElementById('voice-progress').style.display = 'none';
+  if (lastHighlight) {
+    const prevEl = document.getElementById(lastHighlight);
+    if (prevEl) prevEl.classList.remove('voice-highlight');
+    lastHighlight = null;
+  }
+}
+
+function nextChapter() {
+  if (currentChapter < CHAPTERS.length - 1) speakChapter(currentChapter + 1, isPlaying);
+}
+function prevChapter() {
+  if (currentChapter > 0) speakChapter(currentChapter - 1, isPlaying);
+}
+
+function toggleChapters() {
+  const el = document.getElementById('chapter-list');
+  const isOpen = el.style.display === 'block';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) renderChapters();
+}
+function renderChapters() {
+  const el = document.getElementById('chapter-items');
+  el.innerHTML = CHAPTERS.map((ch, idx) => `
+    <div onclick="playSingleChapter(${idx})" style="padding:8px 10px;border-radius:8px;cursor:pointer;font-size:12px;color:#3c4043;border:1px solid #f1f3f4;margin-bottom:5px;transition:background .15s" onmouseover="this.style.background='#f1f3f4'" onmouseout="this.style.background='transparent'">
+      ${ch.title}
+    </div>
+  `).join('');
+}
+function playSingleChapter(idx) {
+  isPlaying = true;
+  document.getElementById('voice-icon').textContent = '⏸️';
+  document.getElementById('voice-label').textContent = 'Pausar explicación';
+  document.getElementById('voice-progress').style.display = 'block';
+  document.getElementById('chapter-list').style.display = 'none';
+  speakChapter(idx, false);
+}
+
+function initVoices() {
+  selectedVoice = pickBestVoice();
+}
+if ('speechSynthesis' in window) {
+  initVoices();
+  speechSynthesis.onvoiceschanged = initVoices;
+}
+</script>
+
+</body>
+</html>
